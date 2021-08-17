@@ -1,0 +1,3 @@
+com.us.idl.javaidl.JavaIDLCodegen
+com.us.idl.javaidl.SpringIDLCodegen
+com.us.idl.pythonidl.PythonFastApiIDLCodegen

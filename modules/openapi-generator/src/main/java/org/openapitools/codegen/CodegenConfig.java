@@ -152,7 +152,7 @@ public interface CodegenConfig {
 
     void preprocessOpenAPI(OpenAPI openAPI);
 
-    void processOpenAPI(OpenAPI openAPI);
+    void    processOpenAPI(OpenAPI openAPI);
 
     Compiler processCompiler(Compiler compiler);
 
