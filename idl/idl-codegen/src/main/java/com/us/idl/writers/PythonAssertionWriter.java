@@ -13,6 +13,9 @@ public class PythonAssertionWriter implements AssertionWriter {
     public String assertOperation;
     public CodegenOperation operation;
 
+    public PythonAssertionWriter(CodegenOperation operation){
+        this.operation = operation;
+    }
     /**
      *  Write the assertion operation for the IDL dependency
      * @param dep

@@ -3,6 +3,7 @@ package com.us.idl.pythonidl;
 import com.google.common.collect.Iterators;
 import com.google.inject.Injector;
 import com.us.idl.CodegenDependency;
+import com.us.idl.writers.AssertionWriter;
 import com.us.idl.writers.PythonAssertionWriter;
 import es.us.isa.idl.IDLStandaloneSetupGenerated;
 import es.us.isa.idl.idl.*;
@@ -112,8 +113,7 @@ public class PythonFastApiIDLCodegen extends PythonFastAPIServerCodegen implemen
                 Injector injector = new IDLStandaloneSetupGenerated().createInjectorAndDoEMFRegistration();
                 XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
                 Resource resource = resourceSet.createResource(URI.createURI("dummy:/example.idl"));
-                PythonAssertionWriter assertionWriter = new PythonAssertionWriter();
-                assertionWriter.operation = op;
+                AssertionWriter assertionWriter = new PythonAssertionWriter(op);
 
                 for (String dep: dependencies){
                     resource.load(new ByteArrayInputStream(dep.getBytes()), resourceSet.getLoadOptions());

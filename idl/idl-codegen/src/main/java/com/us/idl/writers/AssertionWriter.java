@@ -7,5 +7,4 @@ public interface AssertionWriter {
 
     String writeDependency(Dependency dep);
 
-    void writeClause(GeneralClause clause);
 }
