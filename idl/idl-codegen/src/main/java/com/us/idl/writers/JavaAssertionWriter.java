@@ -143,8 +143,11 @@ public class JavaAssertionWriter {
      */
     private void writeRelationalDependency(RelationalDependency dep, boolean alone){
         if(alone)
+            // The parameters has to satisfy the dependency if both are present
             this.assertOperation += "(!(" + writeParamName(dep.getParam1().getName()) + " != null && " + writeParamName(dep.getParam2().getName()) + " != null) || (" +
                     writeParamName(dep.getParam1().getName()) + dep.getRelationalOp() + writeParamName(dep.getParam2().getName()) + "))";
+
+        // else, the parameters has to be present and satisfy the dependency
         else this.assertOperation += "(" + writeParamName(dep.getParam1().getName()) + " != null && " + writeParamName(dep.getParam2().getName()) + " != null && " +
                 writeParamName(dep.getParam1().getName()) + dep.getRelationalOp() + writeParamName(dep.getParam2().getName()) + ")";
     }
@@ -158,6 +161,8 @@ public class JavaAssertionWriter {
     private void writeArithmeticDependency(ArithmeticDependency dep, boolean alone){
         this.assertOperation += "(";
         if (alone)
+            // The parameters has to satisfy the dependency if both are present
+            // write as a conditional (!A || B)
             this.assertOperation += "!(";
         Iterator params = IteratorExtensions.toIterable(Iterators.filter(dep.eAllContents(), Param.class)).iterator();
 
@@ -167,6 +172,8 @@ public class JavaAssertionWriter {
         }
 
         if (alone) {
+            // trim last && and write || for the top level dependency
+            // if not alone, the last && links with the operation assertion
             this.assertOperation = this.assertOperation.substring(0, this.assertOperation.length()-4);
             this.assertOperation += ") || (";
         }
@@ -179,19 +186,19 @@ public class JavaAssertionWriter {
             this.assertOperation += ")";
     }
 
-    private String writeOperation(es.us.isa.idl.idl.Operation operation){
+    private void writeOperation(es.us.isa.idl.idl.Operation operation){
         if(operation.getOpeningParenthesis() == null){
+            // Write parameter name and operation continuation
             this.assertOperation += writeParamName(operation.getFirstParam().getName());
             writeOperationContinuation(operation.getOperationContinuation());
         } else {
+            // Write nested operation in parentheses and
             this.assertOperation += "(";
             writeOperation(operation.getOperation());
             this.assertOperation += ")";
             if (operation.getOperationContinuation() != null)
                 writeOperationContinuation(operation.getOperationContinuation());
         }
-
-        return this.assertOperation;
     }
 
     private void writeOperationContinuation(OperationContinuation opCont){

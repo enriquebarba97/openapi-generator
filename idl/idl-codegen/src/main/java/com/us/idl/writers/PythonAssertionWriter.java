@@ -6,6 +6,7 @@ import es.us.isa.idl.idl.impl.*;
 import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 import org.openapitools.codegen.CodegenOperation;
 import org.openapitools.codegen.CodegenParameter;
+import org.openapitools.codegen.utils.StringUtils;
 
 import java.util.Iterator;
 
@@ -213,7 +214,7 @@ public class PythonAssertionWriter implements AssertionWriter {
     private void writePredefinedDependency(GeneralPredefinedDependency dep){
         if (dep.getNot() != null)
             this.assertOperation += " not ";
-        this.assertOperation += "DependencyUtil." + dep.getPredefDepType() + "Dependency(";
+        this.assertOperation += StringUtils.underscore(dep.getPredefDepType()) + "_dependency(";
 
         for(GeneralPredicate depElement:dep.getPredefDepElements()){
             writePredicate(depElement);
