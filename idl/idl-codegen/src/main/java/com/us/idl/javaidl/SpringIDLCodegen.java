@@ -2,6 +2,7 @@ package com.us.idl.javaidl;
 
 import com.google.inject.Injector;
 import com.us.idl.CodegenDependency;
+import com.us.idl.writers.AssertionWriter;
 import com.us.idl.writers.JavaAssertionWriter;
 import es.us.isa.idl.IDLStandaloneSetupGenerated;
 import es.us.isa.idl.idl.Dependency;
@@ -19,6 +20,7 @@ import org.openapitools.codegen.SupportingFile;
 import org.openapitools.codegen.languages.SpringCodegen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.jvm.hotspot.utilities.Assert;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -112,8 +114,7 @@ public class SpringIDLCodegen extends SpringCodegen implements CodegenConfig {
                 Injector injector = new IDLStandaloneSetupGenerated().createInjectorAndDoEMFRegistration();
                 XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
                 Resource resource = resourceSet.createResource(URI.createURI("dummy:/example.idl"));
-                JavaAssertionWriter assertionWriter = new JavaAssertionWriter();
-                assertionWriter.operation = op;
+                AssertionWriter assertionWriter = new JavaAssertionWriter(op);
 
                 for (String dep: dependencies){
                     resource.load(new ByteArrayInputStream(dep.getBytes()), resourceSet.getLoadOptions());

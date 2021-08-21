@@ -2,6 +2,7 @@ package com.us.idl.javaidl;
 
 import com.google.common.collect.Iterators;
 import com.google.inject.Injector;
+import com.us.idl.writers.AssertionWriter;
 import com.us.idl.writers.JavaAssertionWriter;
 import es.us.isa.idl.IDLStandaloneSetupGenerated;
 import es.us.isa.idl.idl.*;
@@ -111,8 +112,7 @@ public class JavaIDLCodegen extends JavaClientCodegen implements CodegenConfig {
         Injector injector = new IDLStandaloneSetupGenerated().createInjectorAndDoEMFRegistration();
         XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
         Resource resource = resourceSet.createResource(URI.createURI("dummy:/example.idl"));
-        JavaAssertionWriter assertionWriter = new JavaAssertionWriter();
-        assertionWriter.operation = op;
+        AssertionWriter assertionWriter = new JavaAssertionWriter(op);
 
         for (String dep: dependencies){
           resource.load(new ByteArrayInputStream(dep.getBytes()), resourceSet.getLoadOptions());

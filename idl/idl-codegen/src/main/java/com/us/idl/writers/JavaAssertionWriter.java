@@ -9,11 +9,14 @@ import org.openapitools.codegen.CodegenParameter;
 
 import java.util.Iterator;
 
-public class JavaAssertionWriter {
+public class JavaAssertionWriter implements AssertionWriter{
 
     public String assertOperation;
     public CodegenOperation operation;
 
+    public JavaAssertionWriter(CodegenOperation operation){
+        this.operation = operation;
+    }
     /**
      *  Write the assertion operation for the IDL dependency
      * @param dep
