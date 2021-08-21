@@ -9,18 +9,21 @@ import org.openapitools.codegen.CodegenParameter;
 
 import java.util.Iterator;
 
-public class JavaAssertionWriter {
+public class JavaAssertionWriter implements AssertionWriter{
 
     public String assertOperation;
     public CodegenOperation operation;
 
+    public JavaAssertionWriter(CodegenOperation operation){
+        this.operation = operation;
+    }
     /**
      *  Write the assertion operation for the IDL dependency
      * @param dep
      * @return Assertion operation for the dependency
      */
     public String writeDependency(Dependency dep){
-        this.assertOperation = "";
+        this.assertOperation = "!";
         if(dep.getDep() instanceof ConditionalDependencyImpl) {
             writeConditionalDependency((ConditionalDependency) dep.getDep());
         }else if(dep.getDep() instanceof ArithmeticDependencyImpl){
@@ -28,7 +31,8 @@ public class JavaAssertionWriter {
         } else if (dep.getDep() instanceof RelationalDependencyImpl){
             writeRelationalDependency((RelationalDependency) dep.getDep(), true);
         } else if (dep.getDep() instanceof GeneralPredefinedDependencyImpl) {
-            writePredefinedDependency((GeneralPredefinedDependency) dep.getDep());
+            this.assertOperation = "";
+            writePredefinedDependency((GeneralPredefinedDependency) dep.getDep(), true);
         }
         return this.assertOperation;
     }
@@ -101,7 +105,7 @@ public class JavaAssertionWriter {
             } else if (clause.getFirstElement() instanceof ArithmeticDependencyImpl){
                 writeArithmeticDependency((ArithmeticDependency) clause.getFirstElement(), false);
             } else if (clause.getFirstElement() instanceof GeneralPredefinedDependencyImpl){
-                writePredefinedDependency((GeneralPredefinedDependency) clause.getFirstElement());
+                writePredefinedDependency((GeneralPredefinedDependency) clause.getFirstElement(), false);
             }
 
         }
@@ -217,10 +221,10 @@ public class JavaAssertionWriter {
      * @param dep
      * @return
      */
-    private void writePredefinedDependency(GeneralPredefinedDependency dep){
-        if (dep.getNot() != null)
+    private void writePredefinedDependency(GeneralPredefinedDependency dep, boolean alone){
+        if (!alone ^ dep.getNot() != null)
             this.assertOperation += "!";
-        this.assertOperation += "DependencyUtil." + dep.getPredefDepType() + "Dependency(";
+        this.assertOperation += "DependencyUtil.doNotSatisfy" + dep.getPredefDepType() + "Dependency(";
 
         for(GeneralPredicate depElement:dep.getPredefDepElements()){
             writePredicate(depElement);

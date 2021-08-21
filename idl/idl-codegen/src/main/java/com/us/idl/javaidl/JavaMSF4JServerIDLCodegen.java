@@ -17,26 +17,26 @@ import org.openapitools.codegen.CodegenConfig;
 import org.openapitools.codegen.CodegenOperation;
 import org.openapitools.codegen.CodegenType;
 import org.openapitools.codegen.SupportingFile;
+import org.openapitools.codegen.languages.JavaMSF4JServerCodegen;
 import org.openapitools.codegen.languages.SpringCodegen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.jvm.hotspot.utilities.Assert;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpringIDLCodegen extends SpringCodegen implements CodegenConfig {
+public class JavaMSF4JServerIDLCodegen extends JavaMSF4JServerCodegen implements CodegenConfig {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpringIDLCodegen.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavaMSF4JServerIDLCodegen.class);
     protected String apiVersion = "1.0.0";
 
     /**
      * Configures the type of generator.
      *
      * @return the CodegenType for this generator
-     * @see org.openapitools.codegen.CodegenType
+     * @see CodegenType
      */
     @Override
     public CodegenType getTag() {
@@ -51,7 +51,7 @@ public class SpringIDLCodegen extends SpringCodegen implements CodegenConfig {
      */
     @Override
     public String getName() {
-        return "spring-idl";
+        return "msf4j-server-idl";
     }
 
     /**
@@ -62,16 +62,16 @@ public class SpringIDLCodegen extends SpringCodegen implements CodegenConfig {
      */
     @Override
     public String getHelp() {
-        return "Generates a spring server stub with IDL dependencies.";
+        return "Generates a MSF4J server stub with IDL dependencies.";
     }
 
-    public SpringIDLCodegen() {
+    public JavaMSF4JServerIDLCodegen() {
         super();
         /**
          * Template Location.  This is the location which templates will be read from.  The generator
          * will use the resource stream to attempt to read the templates.
          */
-        templateDir = "spring-idl";
+        templateDir = "msf4j-server-idl";
     }
 
     @Override
@@ -91,7 +91,7 @@ public class SpringIDLCodegen extends SpringCodegen implements CodegenConfig {
                 if (path.readOperations() != null) {
                     for(Operation operation : path.readOperations()){
                         if (operation.getExtensions()!=null && operation.getExtensions().containsKey("x-dependencies")){
-                            supportingFiles.add(new SupportingFile("DependencyUtil.mustache", (sourceFolder + '/' + invokerPackage).replace(".", "/"), "DependencyUtil.java"));
+                            supportingFiles.add(new SupportingFile("DependencyUtil.mustache", (sourceFolder + '/' + apiPackage).replace(".", "/"), "DependencyUtil.java"));
                             dependencies = true;
                             break;
                         }
@@ -115,11 +115,6 @@ public class SpringIDLCodegen extends SpringCodegen implements CodegenConfig {
                 XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
                 Resource resource = resourceSet.createResource(URI.createURI("dummy:/example.idl"));
                 AssertionWriter assertionWriter = new JavaAssertionWriter(op);
-
-                for (String dep: dependencies){
-                    resource.load(new ByteArrayInputStream(dep.getBytes()), resourceSet.getLoadOptions());
-                }
-                resource.getContents().size();
 
                 for (String dep: dependencies){
                     resource.load(new ByteArrayInputStream(dep.getBytes()), resourceSet.getLoadOptions());
