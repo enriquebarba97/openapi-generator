@@ -20,7 +20,6 @@ import org.openapitools.codegen.SupportingFile;
 import org.openapitools.codegen.languages.SpringCodegen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.jvm.hotspot.utilities.Assert;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -115,11 +114,6 @@ public class SpringIDLCodegen extends SpringCodegen implements CodegenConfig {
                 XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
                 Resource resource = resourceSet.createResource(URI.createURI("dummy:/example.idl"));
                 AssertionWriter assertionWriter = new JavaAssertionWriter(op);
-
-                for (String dep: dependencies){
-                    resource.load(new ByteArrayInputStream(dep.getBytes()), resourceSet.getLoadOptions());
-                }
-                resource.getContents().size();
 
                 for (String dep: dependencies){
                     resource.load(new ByteArrayInputStream(dep.getBytes()), resourceSet.getLoadOptions());
