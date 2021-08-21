@@ -118,6 +118,11 @@ public class SpringIDLCodegen extends SpringCodegen implements CodegenConfig {
 
                 for (String dep: dependencies){
                     resource.load(new ByteArrayInputStream(dep.getBytes()), resourceSet.getLoadOptions());
+                }
+                resource.getContents().size();
+
+                for (String dep: dependencies){
+                    resource.load(new ByteArrayInputStream(dep.getBytes()), resourceSet.getLoadOptions());
                     String assertOperation = assertionWriter.writeDependency((Dependency) resource.getContents().get(0).eContents().get(0));
 
                     CodegenDependency dependency = new CodegenDependency();
