@@ -25,7 +25,7 @@ public class PythonFastApiIDLCodegenTest {
     // https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-cli/src/main/java/org/openapitools/codegen/cmd/Generate.java 
     final CodegenConfigurator configurator = new CodegenConfigurator()
               .setGeneratorName("python-fastapi-idl") // use this codegen library
-              .setInputSpec("../../youtubeIDL.yaml") // sample OpenAPI file
+              .setInputSpec("youtubeIDL.yaml") // sample OpenAPI file
               // .setInputSpec("https://raw.githubusercontent.com/openapitools/openapi-generator/master/modules/openapi-generator/src/test/resources/2_0/petstore.yaml") // or from the server
               .setOutputDir("out/flask-idl"); // output directory
 

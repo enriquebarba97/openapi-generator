@@ -58,7 +58,7 @@ async def {{operationId}}(
     ...{{/notes}}{{^notes}}...{{/notes}}
     {{#vendorExtensions}}{{#x-dependencies}}
     # Check dependency: {{& idlDependency}}
-    if not {{& assertOperation}}:
+    if {{& assertOperation}}:
       raise HTTPException(status_code=400, detail="Dependency not satisfied: {{& idlDependency}}")
     {{/x-dependencies}}{{/vendorExtensions}}
 {{^-last}}

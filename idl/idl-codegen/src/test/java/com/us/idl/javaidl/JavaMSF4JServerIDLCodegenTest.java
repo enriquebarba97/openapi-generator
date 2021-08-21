@@ -25,7 +25,7 @@ public class JavaMSF4JServerIDLCodegenTest {
     // https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-cli/src/main/java/org/openapitools/codegen/cmd/Generate.java 
     final CodegenConfigurator configurator = new CodegenConfigurator()
               .setGeneratorName("msf4j-server-idl") // use this codegen library
-              .setInputSpec("../../youtubeIDL.yaml") // sample OpenAPI file
+              .setInputSpec("youtubeIDL.yaml") // sample OpenAPI file
               // .setInputSpec("https://raw.githubusercontent.com/openapitools/openapi-generator/master/modules/openapi-generator/src/test/resources/2_0/petstore.yaml") // or from the server
               .setOutputDir("out/msf4j-server-idl"); // output directory
 
