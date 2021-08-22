@@ -65,6 +65,18 @@ public class SpringIDLCodegenTest {
   }
 
   @Test
+  public void testErrorsInIDL(){
+    OpenAPI openAPI = new OpenAPIParser().readLocation("youtubeIDLerrors.yaml", null, new ParseOptions()).getOpenAPI();
+    SpringIDLCodegen codegen = new SpringIDLCodegen();
+
+    String path = "/youtube/v3/commentThreads";
+    Operation operation = openAPI.getPaths().get(path).readOperations().get(0);
+    CodegenOperation op = codegen.fromOperation(path,"get",operation,openAPI.getServers());
+
+    Assert.assertNull(op.vendorExtensions.get("x-dependencies"));
+  }
+
+  @Test
   public void updatedSupportingFiles(){
     OpenAPI openAPI = new OpenAPIParser().readLocation("youtubeIDL.yaml", null, new ParseOptions()).getOpenAPI();
     SpringIDLCodegen codegen = new SpringIDLCodegen();

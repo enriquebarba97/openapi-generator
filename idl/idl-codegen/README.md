@@ -1,85 +1,50 @@
-# OpenAPI Generator for the java-idl library
+# OpenAPI Generator with IDL dependencies
 
 ## Overview
-This is a boiler-plate project to generate your own project derived from an OpenAPI specification.
-Its goal is to get you started with the basic plumbing so you can put in your own logic.
-It won't work without your changes applied.
+This project contains a series of extension classes for some of the Java and Python generators in OpenAPI Generator. This extensions generates assertions for inter-parameter dependencies in an operation, returning error responses when this dependencies are not satisfied.
 
-## What's OpenAPI
-The goal of OpenAPI is to define a standard, language-agnostic interface to REST APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection.
-When properly described with OpenAPI, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
-Similar to what interfaces have done for lower-level programming, OpenAPI removes the guesswork in calling the service.
+In case you are not familiar with the concept, an inter-parameter dependency is when the presence or value of one or more parameters in an API request forces other parameters to be present or have a specific value. For example, we could have two optional parameters p1 and p2, but the presence of p1 in the request forces p2 to also be included. If not, APIs usually return a 400 Bad Request response.
+
+Currently, the expression of these dependencies is handled using the Inter-parameter Dependency Language (IDL). More information on IDL and the current implementation of this feature for OpenAPI generator can be found in the following links:
+
+- IDL repository, including [examples of IDL dependencies](https://github.com/isa-group/IDL/tree/master/es.us.isa.interparamdep/resources/expressiveness_evaluation?rgh-link-date=2021-02-16T09%3A15%3A27Z): [isa-group/IDL](https://github.com/isa-group/IDL)
+- [Research paper on IDL](https://www.researchgate.net/publication/348280988_Specification_and_Automated_Analysis_of_Inter-Parameter_Dependencies_in_Web_APIs)
+- [Issue in the OpenAPI Generator repository](https://github.com/OpenAPITools/openapi-generator/issues/8722), including examples and implementation details.
+- [Pull request of the feature for the Java client libraries and servers](https://github.com/OpenAPITools/openapi-generator/pull/10131) supported in this extension
 
 Check out [OpenAPI-Spec](https://github.com/OAI/OpenAPI-Specification) for additional information about the OpenAPI project, including additional libraries with support for other languages and more. 
 
 ## How do I use this?
-At this point, you've likely generated a client setup.  It will include something along these lines:
-
-```
-.
-|- README.md    // this file
-|- pom.xml      // build script
-|-- src
-|--- main
-|---- java
-|----- com.us.idl.javaidl.JavaIDLCodegen.java // generator file
-|---- resources
-|----- java-idl // template files
-|----- META-INF
-|------ services
-|------- org.openapitools.codegen.CodegenConfig
-```
-
-You _will_ need to make changes in at least the following:
-
-`JavaIdlGenerator.java`
-
-Templates in this folder:
-
-`src/main/resources/java-idl`
-
-Once modified, you can run this:
-
+First, you must compile the project into a jar package. This can be done using the following command in the project folder (with maven installed)
 ```
 mvn package
 ```
 
-In your generator project. A single jar file will be produced in `target`. You can now use that with [OpenAPI Generator](https://openapi-generator.tech):
+A single jar file will be produced in `target`. You can now use that with [OpenAPI Generator](https://openapi-generator.tech):
 
 For mac/linux:
 ```
-java -cp /path/to/openapi-generator-cli.jar:/path/to/your.jar org.openapitools.codegen.OpenAPIGenerator generate -g java-idl -i /path/to/openapi.yaml -o ./test
+java -cp /path/to/openapi-generator-cli.jar:/path/to/idl-codegen-openapi-generator-1.0.0.jar org.openapitools.codegen.OpenAPIGenerator generate -g java-idl -i /path/to/openapi.yaml -o ./test
 ```
-(Do not forget to replace the values `/path/to/openapi-generator-cli.jar`, `/path/to/your.jar` and `/path/to/openapi.yaml` in the previous command)
+(Do not forget to replace the values `/path/to/openapi-generator-cli.jar`, `/path/to/idl-codegen-openapi-generator-1.0.0.jar` and `/path/to/openapi.yaml` in the previous command)
 
 For Windows users, you will need to use `;` instead of `:` in the classpath, e.g.
 ```
 java -cp /path/to/openapi-generator-cli.jar;/path/to/your.jar org.openapitools.codegen.OpenAPIGenerator generate -g java-idl -i /path/to/openapi.yaml -o ./test
 ```
 
-Now your templates are available to the client generator and you can write output values
+Now the IDL generators are available to the client generator.
 
-## But how do I modify this?
-The `JavaIdlGenerator.java` has comments in it--lots of comments.  There is no good substitute
-for reading the code more, though.  See how the `JavaIdlGenerator` implements `CodegenConfig`.
-That class has the signature of all values that can be overridden.
+The supported generators are the following:
 
-You can also step through JavaIdlGenerator.java in a debugger.  Just debug the JUnit
-test in DebugCodegenLauncher.  That runs the command line tool and lets you inspect what the code is doing.  
-
-For the templates themselves, you have a number of values available to you for generation.
-You can execute the `java` command from above while passing different debug flags to show
-the object you have available during client generation:
-
-```
-# The following additional debug options are available for all codegen targets:
-# -DdebugOpenAPI prints the OpenAPI Specification as interpreted by the codegen
-# -DdebugModels prints models passed to the template engine
-# -DdebugOperations prints operations passed to the template engine
-# -DdebugSupportingFiles prints additional data passed to the template engine
-
-java -DdebugOperations -cp /path/to/openapi-generator-cli.jar:/path/to/your.jar org.openapitools.codegen.OpenAPIGenerator generate -g java-idl -i /path/to/openapi.yaml -o ./test
-```
-
-Will, for example, output the debug info for operations.
-You can use this info in the `api.mustache` file.
+- Java Client `-g java-idl --library=libraryname`. The supported libraries are:
+  - google-api-client
+  - jersey2
+  - native
+  - okhttp-gson
+  - resteasy
+  - resttemplate
+  - webclient
+- Spring Server `-g spring-idl`
+- MSF4J Server `-g msf4j-server-idl`
+- Python FastAPI Server `-g python-fastapi-idl`

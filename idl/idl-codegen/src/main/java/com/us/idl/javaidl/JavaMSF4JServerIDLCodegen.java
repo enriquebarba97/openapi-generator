@@ -133,8 +133,8 @@ public class JavaMSF4JServerIDLCodegen extends JavaMSF4JServerCodegen implements
             }catch (IOException e){
                 LOGGER.error("Error while processing IDL dependencies for operation: " + op.operationId + ". They will not be included");
                 op.vendorExtensions.remove("x-dependencies");
-            }catch (IllegalArgumentException e){
-                LOGGER.error("Error while processing IDL dependencies for operation: " + op.operationId + ": " + e.getMessage());
+            }catch (IllegalArgumentException | NullPointerException e){
+                LOGGER.error("Error while processing IDL dependencies for operation: " + op.operationId + ". Check the syntax: " + e.getMessage());
                 op.vendorExtensions.remove("x-dependencies");
             }
         }

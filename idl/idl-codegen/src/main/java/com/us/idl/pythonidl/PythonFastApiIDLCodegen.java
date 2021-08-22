@@ -8,7 +8,9 @@ import com.us.idl.writers.PythonAssertionWriter;
 import es.us.isa.idl.IDLStandaloneSetupGenerated;
 import es.us.isa.idl.idl.*;
 import es.us.isa.idl.idl.impl.*;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.servers.Server;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -21,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -73,34 +76,34 @@ public class PythonFastApiIDLCodegen extends PythonFastAPIServerCodegen implemen
         templateDir = "fastapi-idl";
     }
 
-//    @Override
-//    public void processOpts() {
-//        super.processOpts();
-//        importMapping.put("DependencyUtil", invokerPackage + ".DependencyUtil");
-//    }
+    @Override
+    public void processOpts() {
+        super.processOpts();
+        importMapping.put("DependencyUtil", "from " + this.packageName + ".dependency_util import *");
+    }
 
-//    @Override
-//    public void preprocessOpenAPI(OpenAPI openAPI) {
-//        super.preprocessOpenAPI(openAPI);
-//
-//        if (openAPI.getPaths() != null){
-//            for (String pathname : openAPI.getPaths().keySet()) {
-//                boolean dependencies = false;
-//                PathItem path = openAPI.getPaths().get(pathname);
-//                if (path.readOperations() != null) {
-//                    for(Operation operation : path.readOperations()){
-//                        if (operation.getExtensions()!=null && operation.getExtensions().containsKey("x-dependencies")){
-//                            supportingFiles.add(new SupportingFile("DependencyUtil.mustache", (sourceFolder + '/' + invokerPackage).replace(".", "/"), "DependencyUtil.java"));
-//                            dependencies = true;
-//                            break;
-//                        }
-//                    }
-//                }
-//                if (dependencies)
-//                    break;
-//            }
-//        }
-//    }
+    @Override
+    public void preprocessOpenAPI(OpenAPI openAPI) {
+        super.preprocessOpenAPI(openAPI);
+
+        if (openAPI.getPaths() != null){
+            for (String pathname : openAPI.getPaths().keySet()) {
+                boolean dependencies = false;
+                PathItem path = openAPI.getPaths().get(pathname);
+                if (path.readOperations() != null) {
+                    for(Operation operation : path.readOperations()){
+                        if (operation.getExtensions()!=null && operation.getExtensions().containsKey("x-dependencies")){
+                            supportingFiles.add(new SupportingFile("dependency_util.mustache", "src" + File.separator + this.packageName.replace('.', File.separatorChar), "dependency_util.py"));
+                            dependencies = true;
+                            break;
+                        }
+                    }
+                }
+                if (dependencies)
+                    break;
+            }
+        }
+    }
 
     @Override
     public CodegenOperation fromOperation(String path, String httpMethod, Operation operation, List<Server> servers) {
@@ -132,8 +135,8 @@ public class PythonFastApiIDLCodegen extends PythonFastAPIServerCodegen implemen
             }catch (IOException e){
                 LOGGER.error("Error while processing IDL dependencies for operation: " + op.operationId + ". They will not be included");
                 op.vendorExtensions.remove("x-dependencies");
-            }catch (IllegalArgumentException e){
-                LOGGER.error("Error while processing IDL dependencies for operation: " + op.operationId + ": " + e.getMessage());
+            }catch (IllegalArgumentException | NullPointerException e){
+                LOGGER.error("Error while processing IDL dependencies for operation: " + op.operationId + ". Check the syntax: " + e.getMessage());
                 op.vendorExtensions.remove("x-dependencies");
             }
         }
