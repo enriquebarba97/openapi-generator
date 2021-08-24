@@ -21,7 +21,7 @@ public class JavaAssertionWriterTest {
         OpenAPI openAPI = new OpenAPIParser().readLocation("example.yaml", null, new ParseOptions()).getOpenAPI();
         JavaIDLCodegen codegen = new JavaIDLCodegen();
 
-        String path = "/example1/singular";
+        String path = "/example1/simple";
         Operation operation = openAPI.getPaths().get(path).readOperations().get(0);
         CodegenOperation op = codegen.fromOperation(path,"get",operation,openAPI.getServers());
 
@@ -29,7 +29,24 @@ public class JavaAssertionWriterTest {
 
         for (CodegenDependency dep: dependencies){
             Assert.assertNotNull(dep.assertOperation);
-            System.out.println("Dependency: " + dep.idlDependency + "\t Assertion: " + dep.assertOperation);
+            System.out.println("Dependency: " + dep.idlDependency + "\n\t Assertion: " + dep.assertOperation);
+        }
+    }
+
+    @Test
+    public void generateComplexAssertions(){
+        OpenAPI openAPI = new OpenAPIParser().readLocation("example.yaml", null, new ParseOptions()).getOpenAPI();
+        JavaIDLCodegen codegen = new JavaIDLCodegen();
+
+        String path = "/example1/complex";
+        Operation operation = openAPI.getPaths().get(path).readOperations().get(0);
+        CodegenOperation op = codegen.fromOperation(path,"get",operation,openAPI.getServers());
+
+        List<CodegenDependency> dependencies = (List<CodegenDependency>) op.vendorExtensions.get("x-dependencies");
+
+        for (CodegenDependency dep: dependencies){
+            Assert.assertNotNull(dep.assertOperation);
+            System.out.println("Dependency: " + dep.idlDependency + "\n\t Assertion: " + dep.assertOperation);
         }
     }
 }

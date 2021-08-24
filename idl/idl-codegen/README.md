@@ -30,7 +30,7 @@ java -cp /path/to/openapi-generator-cli.jar:/path/to/idl-codegen-openapi-generat
 
 For Windows users, you will need to use `;` instead of `:` in the classpath, e.g.
 ```
-java -cp /path/to/openapi-generator-cli.jar;/path/to/your.jar org.openapitools.codegen.OpenAPIGenerator generate -g java-idl -i /path/to/openapi.yaml -o ./test
+java -cp "/path/to/openapi-generator-cli.jar;/path/to/your.jar" org.openapitools.codegen.OpenAPIGenerator generate -g java-idl -i /path/to/openapi.yaml -o ./test
 ```
 
 Now the IDL generators are available to the client generator.

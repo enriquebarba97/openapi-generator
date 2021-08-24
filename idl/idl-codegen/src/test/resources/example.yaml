@@ -8,7 +8,7 @@ info:
     name: Apache-2.0
     url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
 paths:
-  /example1/singular:
+  /example1/simple:
     get:
       operationId: example1GetSingular
       parameters:
@@ -33,6 +33,32 @@ paths:
         - OnlyOne(p1, p2);
         - ZeroOrOne(p1,p2);
         - AllOrNone(p1,p2);
+  /example1/complex:
+    get:
+      operationId: example1GetSingular
+      parameters:
+        - name: p1
+          in: query
+          example: 'example1 value'
+          schema:
+            type: string
+        - name: p2
+          in: query
+          example: 'example1 value'
+          schema:
+            type: string
+        - name: p3
+          in: query
+          example: 'example1 value'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+      x-dependencies:
+        - IF p1 THEN ZeroOrOne(p2, p3);
+        - AllOrNone(p1>p2, p3);
+        - Or(OnlyOne(p1, p2), ZeroOrOne(p2,p3));
 components:
   schemas:
     User:

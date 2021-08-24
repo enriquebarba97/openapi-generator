@@ -1,9 +1,22 @@
 package com.us.idl.javaidl;
 
+import com.us.idl.CodegenDependency;
+import com.us.idl.pythonidl.PythonFastApiIDLCodegen;
+import io.swagger.parser.OpenAPIParser;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.parser.core.models.ParseOptions;
+import org.junit.Assert;
 import org.junit.Test;
 import org.openapitools.codegen.ClientOptInput;
+import org.openapitools.codegen.CodegenOperation;
 import org.openapitools.codegen.DefaultGenerator;
 import org.openapitools.codegen.config.CodegenConfigurator;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 /***
  * This test allows you to easily launch your code generation software under a debugger.
@@ -32,5 +45,64 @@ public class PythonFastApiIDLCodegenTest {
     final ClientOptInput clientOptInput = configurator.toClientOptInput();
     DefaultGenerator generator = new DefaultGenerator();
     generator.opts(clientOptInput).generate();
+  }
+
+
+  @Test
+  public void insertDependencies(){
+    OpenAPI openAPI = new OpenAPIParser().readLocation("youtubeIDL.yaml", null, new ParseOptions()).getOpenAPI();
+    PythonFastApiIDLCodegen codegen = new PythonFastApiIDLCodegen();
+
+    String path = "/youtube/v3/commentThreads";
+    Operation operation = openAPI.getPaths().get(path).readOperations().get(0);
+    CodegenOperation op = codegen.fromOperation(path,"get",operation,openAPI.getServers());
+
+    List<CodegenDependency> dependencies = (List<CodegenDependency>) op.vendorExtensions.get("x-dependencies");
+    Assert.assertEquals(dependencies.size(),6);
+
+    for (CodegenDependency dep: dependencies){
+      Assert.assertNotNull(dep.assertOperation);
+    }
+  }
+
+  @Test
+  public void testErrorsInIDL(){
+    OpenAPI openAPI = new OpenAPIParser().readLocation("youtubeIDLerrors.yaml", null, new ParseOptions()).getOpenAPI();
+    PythonFastApiIDLCodegen codegen = new PythonFastApiIDLCodegen();
+
+    String path = "/youtube/v3/commentThreads";
+    Operation operation = openAPI.getPaths().get(path).readOperations().get(0);
+    CodegenOperation op = codegen.fromOperation(path,"get",operation,openAPI.getServers());
+
+    Assert.assertNull(op.vendorExtensions.get("x-dependencies"));
+  }
+
+  @Test
+  public void updatedSupportingFiles(){
+    OpenAPI openAPI = new OpenAPIParser().readLocation("youtubeIDL.yaml", null, new ParseOptions()).getOpenAPI();
+    PythonFastApiIDLCodegen codegen = new PythonFastApiIDLCodegen();
+
+    codegen.preprocessOpenAPI(openAPI);
+
+    Assert.assertTrue(codegen.supportingFiles().stream().anyMatch(f -> f.getDestinationFilename().equals("dependency_util.py")));
+  }
+
+  @Test
+  public void testGeneratedFiles() throws Exception{
+    File output = Files.createTempDirectory("test").toFile();
+
+    final CodegenConfigurator configurator = new CodegenConfigurator()
+            .setGeneratorName("python-fastapi-idl") // use this codegen library
+            .setInputSpec("youtubeIDL.yaml") // sample OpenAPI file
+            .setOutputDir(output.getAbsolutePath().replace("\\", "/")); // output directory
+
+    final ClientOptInput clientOptInput = configurator.toClientOptInput();
+    DefaultGenerator generator = new DefaultGenerator();
+    List<File> files = generator.opts(clientOptInput).generate();
+
+    Assert.assertEquals(203, files.size());
+
+    Path path = output.toPath().resolve("src/openapi_server/dependency_util.py");
+    Assert.assertTrue("File '" + path.toAbsolutePath().toString() + "' was not found in the list of generated files", files.contains(path.toFile()));
   }
 }
