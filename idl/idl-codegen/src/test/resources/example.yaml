@@ -1,0 +1,58 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://petstore.swagger.io/v2'
+info:
+  version: 1.0.0
+  title: OpenAPI Petstore
+  license:
+    name: Apache-2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+paths:
+  /example1/singular:
+    get:
+      operationId: example1GetSingular
+      parameters:
+        - name: p1
+          in: query
+          example: 'example1 value'
+          schema:
+            type: string
+        - name: p2
+          in: query
+          example: 'example1 value'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+      x-dependencies:
+        - IF p1 THEN p2;
+        - p1 > p2;
+        - p1 + p2 <= 100;
+        - Or(p1, p2);
+        - OnlyOne(p1, p2);
+        - ZeroOrOne(p1,p2);
+        - AllOrNone(p1,p2);
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        address:
+          type: object
+          nullable: true
+          properties:
+            city:
+              type: string
+    DummyUser:
+      type: object
+      properties:
+        name:
+          type: string
+          pattern: '/^[a-z\s]+$/'
+        number:
+          type: string
+          pattern: '/[0-9]{10}/g'
+        address:
+          type: string
+          pattern: '/^[a-z0-9\s]+$/i'
