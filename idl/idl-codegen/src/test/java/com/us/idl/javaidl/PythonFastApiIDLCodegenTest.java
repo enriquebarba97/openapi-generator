@@ -47,6 +47,17 @@ public class PythonFastApiIDLCodegenTest {
     generator.opts(clientOptInput).generate();
   }
 
+  @Test
+  public void noDependencies(){
+    OpenAPI openAPI = new OpenAPIParser().readLocation("youtubeNoIDL.yaml", null, new ParseOptions()).getOpenAPI();
+    PythonFastApiIDLCodegen codegen = new PythonFastApiIDLCodegen();
+
+    String path = "/youtube/v3/commentThreads";
+    Operation operation = openAPI.getPaths().get(path).readOperations().get(0);
+    CodegenOperation op = codegen.fromOperation(path,"get",operation,openAPI.getServers());
+
+    Assert.assertNull(op.vendorExtensions.get("x-dependencies"));
+  }
 
   @Test
   public void insertDependencies(){
